@@ -159,7 +159,6 @@ pipelines:
         type: PromoteBuild
         configuration:
           targetRepository: docker-prod-virtual # <-- PREREQ: Create 2 docker repositories: docker-prod-local (LOCAL) and docker-prod-virtual which aggregates it and uses it as the default deployment repository
-          includeDependencies: true
           integrations:
             - name: ARTFY_INT
           inputResources:
