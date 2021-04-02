@@ -50,9 +50,9 @@ pipelines:
           environmentVariables:
             JFROG_CLI_BUILD_NAME: backend-build
           resolverSnapshotRepo: libs-snapshot-virtual
-          resolverReleaseRepo: libs-release-virtual # <-- PREREQ: Create 3 maven repositories: libs-release-local (type LOCAL), libs-remote (type REMOTE) and libs-release-virtual(type VIRTUAL). Have libs-release-virtual aggregate the local and remote, in that order.  
+          resolverReleaseRepo: libs-staging-virtual # <-- PREREQ: Create 3 maven repositories: libs-staging-local (type LOCAL), libs-staging-remote (type REMOTE) and libs-staging-virtual(type VIRTUAL). Have libs-staging-virtual aggregate the local and remote, in that order.  
           deployerSnapshotRepo: libs-snapshot-local
-          deployerReleaseRepo: libs-release-local
+          deployerReleaseRepo: libs-staging-local
           inputResources:
             - name: be_gitRepo
           integrations:
@@ -76,7 +76,7 @@ pipelines:
           environmentVariables: 
             JFROG_CLI_BUILD_NAME: frontend-build
           sourceLocation: SUV-204-CI-CD-Deep-Dive:JFrog-Pipelines/vue-frontend
-          repositoryName: npm-virtual # <-- PREREQ: Create 3 npm repositories: npm-local (type LOCAL), npm-remote (type REMOTE) and npm-virtual (type VIRTUAL). Have npm-virtual aggregate the local and remote, in that order.  
+          repositoryName: npm-staging-virtual # <-- PREREQ: Create 3 npm repositories: npm-staging-local (type LOCAL), npm-staging-remote (type REMOTE) and npm-staging-virtual (type VIRTUAL). Have npm-staging-virtual aggregate the local and remote, in that order.  
           inputResources:
             - name: fe_gitRepo
           integrations:
@@ -108,7 +108,7 @@ pipelines:
       - name: publish_frontend
         type: NpmPublish
         configuration:
-          repositoryName: npm-local
+          repositoryName: npm-staging-local
           inputSteps:
             - name: pack_frontend
           integrations:
@@ -121,7 +121,7 @@ pipelines:
         type: Bash
         configuration:
           environmentVariables:
-            dockerImageName: vjnpipelines.jfrog.io/docker-local/app # PREREQ(REHYDRATION):  Change the server name to your environment's
+            dockerImageName: vjnpipelines.jfrog.io/docker-staging-local/app # PREREQ(REHYDRATION):  Change the server name to your environment's
             dockerImageTag: ${run_number}
           inputResources:
             - name: be_gitRepo
@@ -144,7 +144,7 @@ pipelines:
             - add_run_variables ${step_name}_buildName=${pipeline_name}
             - docker build --pull --no-cache -t $dockerImageName:$dockerImageTag --build-arg REGISTRY=${int_ARTFY_INT_url} .
             - $jfrog_cli_path rt bce $pipeline_name $run_number
-            - $jfrog_cli_path rt docker-push $dockerImageName:$dockerImageTag docker-local --build-name=$pipeline_name --build-number=$run_number
+            - $jfrog_cli_path rt docker-push $dockerImageName:$dockerImageTag docker-staging-local --build-name=$pipeline_name --build-number=$run_number
             - add_run_files /tmp/jfrog/. jfrog
 
       - name: publish_app_build
