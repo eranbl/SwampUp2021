@@ -1,5 +1,5 @@
 resources:
-  - name: be_demo_gitRepo
+  - name: demo_be_gitRepo
     type: GitRepo
     configuration:
       path: colathurv/SwampUp2021 # <-- PREREQ: Fork current github repository to your github organization and mention fullpath of your forked Repository
@@ -8,7 +8,7 @@ resources:
          # To ensure that only file changes in this sub-directoty triggers a run
         include: ^SUV-204-CI-CD-Deep-Dive\:JFrog-Pipelines/java-backend/.*$
         
-  - name: appl_build_info
+  - name: demo_be_build_info
     type: BuildInfo
     configuration:
       sourceArtifactory: ARTFY_INT
@@ -28,7 +28,7 @@ pipelines:
           deployerSnapshotRepo: libs-demo-snapshot-local
           deployerReleaseRepo: libs-demo-release-local
           inputResources:
-            - name: be_demo_gitRepo
+            - name: demo_be_gitRepo
           integrations:
             - name: ARTFY_INT
           runtime:
@@ -54,7 +54,7 @@ pipelines:
           integrations:
             - name: ARTFY_INT
           inputResources:
-            - name: be_demo_gitRepo
+            - name: demo_be_gitRepo
               trigger: false
           outputResources:
             - name: BackendServerDockerImage
@@ -76,3 +76,5 @@ pipelines:
             - name: GITHUB_INT
           inputSteps:
             - name: bld_docker_image
+          outputResources:
+            - name: demo_be_build_info
