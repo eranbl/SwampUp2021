@@ -1,0 +1,73 @@
+resources:
+  - name: be_demo_gitRepo
+    type: GitRepo
+    configuration:
+      path: colathurv/SwampUp2021 # <-- PREREQ: Fork current github repository to your github organization and mention fullpath of your forked Repository
+      gitProvider: GITHUB_INT
+      files:
+         # To ensure that only file changes in this sub-directoty triggers a run
+        include: ^SUV-204-CI-CD-Deep-Dive\:JFrog-Pipelines/java-backend/.*$
+
+pipelines:
+  - name: swamup2021_demo_template_pipeline
+    steps:
+      - name: bld_backend
+        type: MvnBuild
+        configuration:
+          sourceLocation: SUV-204-CI-CD-Deep-Dive:JFrog-Pipelines/java-backend
+          mvnCommand: clean install -ntp
+          environmentVariables:
+            JFROG_CLI_BUILD_NAME: backend-build
+          resolverSnapshotRepo: libs-snapshot-virtual
+          resolverReleaseRepo: libs-staging-virtual # <-- PREREQ: Create 3 maven repositories: libs-staging-local (type LOCAL), libs-staging-remote (type REMOTE) and libs-staging-virtual(type VIRTUAL). Have libs-staging-virtual aggregate the local and remote, in that order.  
+          deployerSnapshotRepo: libs-demo-snapshot-local
+          deployerReleaseRepo: libs-demo-release-local
+          inputResources:
+            - name: be_demo_gitRepo
+          integrations:
+            - name: ARTFY_INT
+          runtime:
+            type: image
+            image:
+              auto:
+                language: java
+                versions:
+                  - "11"
+        execution:
+          onStart:
+            - javac -version
+            - mvn --version
+
+      - name: bld_docker_image
+        type: DockerBuild
+        configuration:
+          affinityGroup: bldGroup
+          dockerFileLocation: SUV-204-CI-CD-Deep-Dive:JFrog-Pipelines/docker
+          dockerFileName: BE-Dockerfile
+          dockerImageName: vjnpipelines.jfrog.io/docker-template-local/app-backend
+          dockerImageTag: '${run_number}'
+          integrations:
+            - name: ARTFY_INT
+          inputResources:
+            - name: be_demo_gitRepo
+              trigger: false
+          outputResources:
+            - name: BackendServerDockerImage
+          inputSteps:
+            - name: bld_backend
+        execution:
+          onComplete:
+            - echo $step_env_var2
+            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
+      
+      - name: push_docker_image
+        type: DockerPush
+        configuration:
+          affinityGroup: bldGroup
+          targetRepository: docker-template-virtual
+          forceXrayScan: false
+          autoPublishBuildInfo: true
+          integrations:
+            - name: GITHUB_INT
+          inputSteps:
+            - name: bld_docker_image
