@@ -69,7 +69,7 @@ pipelines:
         type: DockerPush
         configuration:
           affinityGroup: bldGroup
-          targetRepository: docker-template-virtual
+          targetRepository: docker-template-local
           forceXrayScan: false
           autoPublishBuildInfo: true
           integrations:
