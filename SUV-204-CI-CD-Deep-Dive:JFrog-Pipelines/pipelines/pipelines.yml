@@ -2,7 +2,7 @@ resources:
   - name: be_gitRepo
     type: GitRepo
     configuration:
-      path: colathurv/SwampUp2021 # <-- PREREQ: Fork current github repository to your github organization and mention fullpath of your forked Repository
+      path: eranbl/SwampUp2021 # <-- PREREQ: Fork current github repository to your github organization and mention fullpath of your forked Repository
       gitProvider: GITHUB_INT
       files:
          # To ensure that only file changes in this sub-directoty triggers a run
@@ -121,7 +121,7 @@ pipelines:
         type: Bash
         configuration:
           environmentVariables:
-            dockerImageName: vjnpipelines.jfrog.io/docker-staging-local/app # PREREQ(REHYDRATION):  Change the server name to your environment's
+            dockerImageName: eranb-docker-staging-local.jfrog.io/docker-staging-local/app # PREREQ(REHYDRATION):  Change the server name to your environment's
             dockerImageTag: ${run_number}
           inputResources:
             - name: be_gitRepo
