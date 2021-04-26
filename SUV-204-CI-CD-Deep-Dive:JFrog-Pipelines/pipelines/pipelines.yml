@@ -121,7 +121,7 @@ pipelines:
         type: Bash
         configuration:
           environmentVariables:
-            dockerImageName: eranb-docker-staging-local.jfrog.io/docker-staging-local/app # PREREQ(REHYDRATION):  Change the server name to your environment's
+            dockerImageName: eranb-docker-staging-local.jfrog.io/app # PREREQ(REHYDRATION):  Change the server name to your environment's
             dockerImageTag: ${run_number}
           inputResources:
             - name: be_gitRepo
