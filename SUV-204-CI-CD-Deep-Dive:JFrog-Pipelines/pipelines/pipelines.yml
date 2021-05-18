@@ -32,7 +32,7 @@ resources:
   - name: fe_gitRepo
     type: GitRepo
     configuration:
-      path: colathurv/SwampUp2021 # <-- PREREQ: Mention fullpath of your forked Repository
+      path: eranbl/SwampUp2021 # <-- PREREQ: Mention fullpath of your forked Repository
       gitProvider: GITHUB_INT2 # <-- PREREQ: Create this Integration to your GitHub Organization where your forked Repo is located
       # To ensure that only file changes in this sub-directoty triggers a run
       files:
